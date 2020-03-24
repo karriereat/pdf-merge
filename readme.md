@@ -23,7 +23,7 @@ $pdfMerge = new PdfMerge();
 $pdfMerge->add('/path/to/file1.pdf');
 $pdfMerge->add('/path/to/file2.pdf');
 
-$pdfMerge->merg('/path/to/output.pdf');
+$pdfMerge->merge('/path/to/output.pdf');
 ```
 
 Please note, that the `merge` method will throw an `NoFilesDefinedException` if no files where added.
