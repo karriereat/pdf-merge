@@ -1,4 +1,4 @@
-name: PHP Composer
+name: test
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    
+
     strategy:
             fail-fast: true
             matrix:
@@ -23,7 +23,7 @@ jobs:
         php-version: ${{ matrix.php }}
         tools: pecl
         extensions: imagick
-          
+
     - uses: actions/checkout@v2
 
     - name: Validate composer.json and composer.lock
@@ -32,8 +32,8 @@ jobs:
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
 
-    # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
-    # Docs: https://getcomposer.org/doc/articles/scripts.md
+    - name: Grant rights
+      run: chmod -R 777 tests/files
 
     - name: Run test suite
       run: composer run-script test
