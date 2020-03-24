@@ -32,8 +32,8 @@ jobs:
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
 
-    - name: Grant rights
-      run: chmod -R 777 tests/files
+    - name: Remove Imagick policy
+      run: sudo rm /etc/ImageMagick-6/policy.xml
 
     - name: Run test suite
       run: composer run-script test
