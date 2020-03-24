@@ -65,7 +65,7 @@ class PdfMerge
      * @param string $outputFilename the file to write to
      * @return bool
      */
-    public function generate(string $outputFilename): bool
+    public function merge(string $outputFilename): bool
     {
         if (count($this->files) === 0) {
             throw new NoFilesDefinedException();

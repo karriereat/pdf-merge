@@ -23,10 +23,10 @@ $pdfMerge = new PdfMerge();
 $pdfMerge->add('/path/to/file1.pdf');
 $pdfMerge->add('/path/to/file2.pdf');
 
-$pdfMerge->generate('/path/to/output.pdf');
+$pdfMerge->merg('/path/to/output.pdf');
 ```
 
-Please note, that the `generate` method will throw an `NoFilesDefinedException` if no files where added.
+Please note, that the `merge` method will throw an `NoFilesDefinedException` if no files where added.
 
 ### Setting custom Imagick Options
 To be able to set options in the `Imagick` instance used you can pass an array on constructing the `PdfMerge` instance.

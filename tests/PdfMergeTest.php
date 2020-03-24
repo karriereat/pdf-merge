@@ -50,7 +50,7 @@ class PdfMergeTest extends TestCase
         $pdfMerge->add($file);
         $pdfMerge->add($file);
 
-        $this->assertTrue($pdfMerge->generate($outputFile));
+        $this->assertTrue($pdfMerge->merge($outputFile));
         $this->assertPDFEquals(__DIR__ . '/files/expected/output.pdf', $outputFile);
     }
 
@@ -64,7 +64,7 @@ class PdfMergeTest extends TestCase
         $pdfMerge->add($file);
         $pdfMerge->add($file);
 
-        $this->assertTrue($pdfMerge->generate($outputFile));
+        $this->assertTrue($pdfMerge->merge($outputFile));
         $this->assertPDFEquals(__DIR__ . '/files/expected/output-150.pdf', $outputFile);
     }
 
@@ -74,7 +74,7 @@ class PdfMergeTest extends TestCase
         $this->expectException(NoFilesDefinedException::class);
 
         $pdfMerge = new PdfMerge();
-        $pdfMerge->generate('/foo.pdf');
+        $pdfMerge->merge('/foo.pdf');
     }
 
     private static function assertPDFEquals(string $expected, string $actual): void
