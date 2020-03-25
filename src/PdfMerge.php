@@ -78,11 +78,17 @@ class PdfMerge
         }
 
         foreach ($this->files as $file) {
-            $pdf->readImage($file);
+            $fh = fopen($file, 'r');
+            $pdf->readImageFile($fh);
+            fclose($fh);
         }
 
         $pdf->setImageFormat('pdf');
 
-        return $pdf->writeImages($outputFilename, true);
+        $fh = fopen($outputFilename, 'w');
+        $res = $pdf->writeImagesFile($fh);
+        fclose($fh);
+
+        return $res;
     }
 }
