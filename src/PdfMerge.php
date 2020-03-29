@@ -4,6 +4,7 @@ namespace Karriere\PdfMerge;
 
 use Karriere\PdfMerge\Exceptions\FileNotFoundException;
 use Karriere\PdfMerge\Exceptions\NoFilesDefinedException;
+use setasign\Fpdi\Fpdi;
 
 class PdfMerge
 {
@@ -71,24 +72,21 @@ class PdfMerge
             throw new NoFilesDefinedException();
         }
 
-        $pdf = new \Imagick();
-
-        foreach ($this->imagickOptions as $key => $value) {
-            $pdf->setOption($key, $value);
-        }
+        $pdf = new Fpdi();
 
         foreach ($this->files as $file) {
-            $fh = fopen($file, 'r');
-            $pdf->readImageFile($fh);
-            fclose($fh);
+            $pageCount = $pdf->setSourceFile($file);
+
+            for ($i = 1; $i <= $pageCount; $i++) {
+                $pageId = $pdf->ImportPage($i);
+                $size = $pdf->getTemplateSize($pageId);
+                $pdf->AddPage($size['orientation'], $size);
+                $pdf->useImportedPage($pageId);
+            }
         }
 
-        $pdf->setImageFormat('pdf');
+        $pdf->Output('F', $outputFilename);
 
-        $fh = fopen($outputFilename, 'w');
-        $res = $pdf->writeImagesFile($fh);
-        fclose($fh);
-
-        return $res;
+        return true;
     }
 }

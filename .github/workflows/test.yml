@@ -21,8 +21,6 @@ jobs:
     - uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ matrix.php }}
-        tools: pecl
-        extensions: imagick
 
     - uses: actions/checkout@v2
 
@@ -31,9 +29,6 @@ jobs:
 
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
-
-    - name: Remove Imagick policy
-      run: sudo rm /etc/ImageMagick-6/policy.xml
 
     - name: Run test suite
       run: composer run-script test

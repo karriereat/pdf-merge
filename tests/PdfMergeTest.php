@@ -6,6 +6,7 @@ use Karriere\PdfMerge\Exceptions\FileNotFoundException;
 use Karriere\PdfMerge\Exceptions\NoFilesDefinedException;
 use Karriere\PdfMerge\PdfMerge;
 use PHPUnit\Framework\TestCase;
+use setasign\Fpdi\Fpdi;
 
 class PdfMergeTest extends TestCase
 {
@@ -55,20 +56,6 @@ class PdfMergeTest extends TestCase
     }
 
     /** @test */
-    public function it_can_handle_imagick_options()
-    {
-        $pdfMerge = new PdfMerge(['density' => '150']);
-        $file = __DIR__ . '/files/dummy.pdf';
-        $outputFile = sys_get_temp_dir() . '/output-150.pdf';
-
-        $pdfMerge->add($file);
-        $pdfMerge->add($file);
-
-        $this->assertTrue($pdfMerge->merge($outputFile));
-        $this->assertPDFEquals(__DIR__ . '/files/expected/output-150.pdf', $outputFile);
-    }
-
-    /** @test */
     public function it_fails_on_generate_when_no_files_were_added()
     {
         $this->expectException(NoFilesDefinedException::class);
@@ -79,18 +66,21 @@ class PdfMergeTest extends TestCase
 
     private static function assertPDFEquals(string $expected, string $actual): void
     {
-        $actual = new \Imagick($actual);
-        $actual->resetIterator();
+        self::assertEquals(
+            filesize($expected),
+            filesize($actual),
+            'The file size of the PDF does not equal the file size from the expected output.'
+        );
 
-        $expected = new \Imagick($expected);
-        $expected->resetIterator();
+        $pdf = new Fpdi();
 
-        list(,$delta) = $actual->compareImages($expected, 1);
+        $expectedPageCount = $pdf->setSourceFile($expected);
+        $actualPageCount = $pdf->setSourceFile($actual);
 
         self::assertEquals(
-            0.0,
-            $delta,
-            'The actual PDF is visually not equal to the expected PDF.'
+            $expectedPageCount,
+            $actualPageCount,
+            'The page count of the PDF does not equal the page count from the expected output.'
         );
     }
 }
