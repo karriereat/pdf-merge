@@ -4,7 +4,7 @@ namespace Karriere\PdfMerge;
 
 use Karriere\PdfMerge\Exceptions\FileNotFoundException;
 use Karriere\PdfMerge\Exceptions\NoFilesDefinedException;
-use setasign\Fpdi\Fpdi;
+use TCPDI;
 
 class PdfMerge
 {
@@ -72,7 +72,7 @@ class PdfMerge
             throw new NoFilesDefinedException();
         }
 
-        $pdf = new Fpdi();
+        $pdf = new TCPDI();
 
         foreach ($this->files as $file) {
             $pageCount = $pdf->setSourceFile($file);
@@ -80,12 +80,13 @@ class PdfMerge
             for ($i = 1; $i <= $pageCount; $i++) {
                 $pageId = $pdf->ImportPage($i);
                 $size = $pdf->getTemplateSize($pageId);
-                $pdf->AddPage($size['orientation'], $size);
-                $pdf->useImportedPage($pageId);
+
+                $pdf->AddPage('P', $size);
+                $pdf->useTemplate($pageId);
             }
         }
 
-        $pdf->Output('F', $outputFilename);
+        $pdf->Output($outputFilename, 'F');
 
         return true;
     }

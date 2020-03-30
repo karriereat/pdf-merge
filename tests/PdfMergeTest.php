@@ -6,7 +6,7 @@ use Karriere\PdfMerge\Exceptions\FileNotFoundException;
 use Karriere\PdfMerge\Exceptions\NoFilesDefinedException;
 use Karriere\PdfMerge\PdfMerge;
 use PHPUnit\Framework\TestCase;
-use setasign\Fpdi\Fpdi;
+use TCPDI;
 
 class PdfMergeTest extends TestCase
 {
@@ -47,6 +47,7 @@ class PdfMergeTest extends TestCase
         $pdfMerge = new PdfMerge();
         $file = __DIR__ . '/files/dummy.pdf';
         $outputFile = sys_get_temp_dir() . '/output.pdf';
+        $outputFile = __DIR__ . '/output.pdf';
 
         $pdfMerge->add($file);
         $pdfMerge->add($file);
@@ -72,7 +73,7 @@ class PdfMergeTest extends TestCase
             'The file size of the PDF does not equal the file size from the expected output.'
         );
 
-        $pdf = new Fpdi();
+        $pdf = new TCPDI();
 
         $expectedPageCount = $pdf->setSourceFile($expected);
         $actualPageCount = $pdf->setSourceFile($actual);
