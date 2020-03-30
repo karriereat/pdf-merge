@@ -5,7 +5,7 @@
 
 # Pdf Merge Solution for PHP
 
-This package is a wrapper for the `Fpdi` class that provides an elegant API for merging PDF files.
+This package is a wrapper for the `TCPDF` class that provides an elegant API for merging PDF files.
 
 ## Installation
 
