@@ -14,20 +14,6 @@ class PdfMerge
     private $files = [];
 
     /**
-     * @var array
-     */
-    private $imagickOptions;
-
-    /**
-     * Creates a new PdfMerge instance
-     * @param array $imagickOptions additional options for Imagick
-     */
-    public function __construct(array $imagickOptions = [])
-    {
-        $this->imagickOptions = $imagickOptions;
-    }
-
-    /**
      * Adds a file to merge
      * @param string $file the file to merge
      * @return void
