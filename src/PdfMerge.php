@@ -15,7 +15,7 @@ class PdfMerge
     /**
      * @var TCPDI
      */
-    private $pdf;
+    protected $pdf;
 
     /**
      * Passed parameters overrides settings for header and footer by calling tcpdf.php methods:
@@ -112,5 +112,10 @@ class PdfMerge
             $lc = $footerConfig['lc'] ?? [0, 0, 0];
             $this->pdf->setFooterData($tc, $lc);
         }
+    }
+    
+    public function getPdf(): ?TCPDI
+    {
+        return $this->pdf;   
     }
 }
