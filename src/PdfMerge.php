@@ -73,7 +73,7 @@ class PdfMerge
      * @return bool
      * @throws NoFilesDefinedException
      */
-    public function merge(string $outputFilename, ?$dest = 'F'): string
+    public function merge(string $outputFilename, ?string $dest = 'F'): string
     {
         if (count($this->files) === 0) {
             throw new NoFilesDefinedException();
