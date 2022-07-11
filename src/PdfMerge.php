@@ -69,10 +69,11 @@ class PdfMerge
     /**
      * Generates a merged PDF file from the already stored pdf files
      * @param string $outputFilename the file to write to
+     * @para ?string $dest cf tcpdf dest parameter in Output function
      * @return bool
      * @throws NoFilesDefinedException
      */
-    public function merge(string $outputFilename): bool
+    public function merge(string $outputFilename, ?$dest = 'F'): string
     {
         if (count($this->files) === 0) {
             throw new NoFilesDefinedException();
@@ -90,9 +91,7 @@ class PdfMerge
             }
         }
 
-        $this->pdf->Output($outputFilename, 'F');
-
-        return true;
+        return $this->pdf->Output($outputFilename, $dest);
     }
 
     private function configureHeaderAndFooter(array $headerConfig, array $footerConfig): void
