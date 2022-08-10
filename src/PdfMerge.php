@@ -66,9 +66,11 @@ class PdfMerge
      * Generates a merged PDF file from the already stored PDF files
      *
      * @param string $outputFilename The file to write to
+     * @param ?string $destination Destination where to send the document, see TCPDF docs for more info
+     * @see \TCPDF::Output()
      * @throws NoFilesDefinedException
      */
-    public function merge(string $outputFilename): bool
+    public function merge(string $outputFilename, ?string $destination = 'F'): string
     {
         if (count($this->files) === 0) {
             throw new NoFilesDefinedException();
@@ -86,9 +88,7 @@ class PdfMerge
             }
         }
 
-        $this->pdf->Output($outputFilename, 'F');
-
-        return true;
+        return $this->pdf->Output($outputFilename, $destination);
     }
 
     private function configureHeaderAndFooter(array $headerConfig, array $footerConfig): void
