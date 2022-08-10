@@ -8,14 +8,8 @@ use TCPDI;
 
 class PdfMerge
 {
-    /**
-     * @var array
-     */
-    private $files = [];
-    /**
-     * @var TCPDI
-     */
-    private $pdf;
+    private array $files = [];
+    private TCPDI $pdf;
 
     /**
      * Passed parameters overrides settings for header and footer by calling tcpdf.php methods:
@@ -23,8 +17,8 @@ class PdfMerge
      * setFooterData($tc=array(0,0,0), $lc=array(0,0,0))
      * For more info about tcpdf, please read https://tcpdf.org/docs/
      *
-     * @param array $headerConfig only values for keys 'ln', 'lw', 'ht', 'hs', 'tc', 'lc' are taken into account
-     * @param array $footerConfig only values for keys 'tc', 'lc' are taken into account
+     * @param array $headerConfig Only values for keys 'ln', 'lw', 'ht', 'hs', 'tc', 'lc' are taken into account
+     * @param array $footerConfig Only values for keys 'tc', 'lc' are taken into account
      */
     public function __construct(array $headerConfig = [], array $footerConfig = [])
     {
@@ -32,10 +26,15 @@ class PdfMerge
         $this->configureHeaderAndFooter($headerConfig, $footerConfig);
     }
 
+    public function getPdf(): TCPDI
+    {
+        return $this->pdf;
+    }
+
     /**
      * Adds a file to merge
-     * @param string $file the file to merge
-     * @return void
+     *
+     * @param string $file The file to merge
      * @throws FileNotFoundException when the given file does not exist
      */
     public function add(string $file): void
@@ -49,8 +48,6 @@ class PdfMerge
 
     /**
      * Checks if the given file is already registered for merging
-     * @param string $file the file to check
-     * @return bool
      */
     public function contains(string $file): bool
     {
@@ -59,7 +56,6 @@ class PdfMerge
 
     /**
      * Resets the stored files
-     * @return void
      */
     public function reset(): void
     {
@@ -67,9 +63,9 @@ class PdfMerge
     }
 
     /**
-     * Generates a merged PDF file from the already stored pdf files
-     * @param string $outputFilename the file to write to
-     * @return bool
+     * Generates a merged PDF file from the already stored PDF files
+     *
+     * @param string $outputFilename The file to write to
      * @throws NoFilesDefinedException
      */
     public function merge(string $outputFilename): bool

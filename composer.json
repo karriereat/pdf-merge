@@ -1,6 +1,6 @@
 {
     "name": "karriere/pdf-merge",
-    "description": "",
+    "description": "A wrapper for the TCPDF class that provides an elegant API for merging PDFs",
     "keywords": ["pdf", "merge"],
     "license": "Apache-2.0",
     "authors": [
@@ -11,10 +11,11 @@
         }
     ],
     "require": {
-        "php": "^7.2 | ^8.0",
+        "php": "^7.4 | ^8.0",
         "tecnickcom/tcpdf": "^6.3"
     },
     "require-dev": {
+        "phpstan/phpstan": "^1.8",
         "phpunit/phpunit": "^8.0 || ^9.0",
         "squizlabs/php_codesniffer": "^3.0"
     },
@@ -34,8 +35,9 @@
         }
     },
     "scripts": {
-        "test": "vendor/bin/phpunit",
-        "lint": "vendor/bin/phpcs src/ --standard=PSR12"
+        "test": "phpunit",
+        "lint": "phpcs src/ --standard=PSR12",
+        "analyse": "phpstan analyse src --level 5"
     },
     "config": {
         "sort-packages": true

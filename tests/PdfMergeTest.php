@@ -11,6 +11,15 @@ use TCPDI;
 class PdfMergeTest extends TestCase
 {
     /** @test */
+    public function it_returns_the_pdf_instance()
+    {
+        $pdfMerge = new PdfMerge();
+        $pdf = $pdfMerge->getPdf();
+
+        $this->assertInstanceOf(TCPDI::class, $pdf);
+    }
+
+    /** @test */
     public function it_fails_on_adding_a_not_existing_file()
     {
         $this->expectException(FileNotFoundException::class);
@@ -46,7 +55,6 @@ class PdfMergeTest extends TestCase
     {
         $pdfMerge = new PdfMerge();
         $file = __DIR__ . '/files/dummy.pdf';
-        $outputFile = sys_get_temp_dir() . '/output.pdf';
         $outputFile = __DIR__ . '/output.pdf';
 
         $pdfMerge->add($file);
