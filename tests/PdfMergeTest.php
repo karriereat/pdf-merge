@@ -60,7 +60,7 @@ class PdfMergeTest extends TestCase
         $pdfMerge->add($file);
         $pdfMerge->add($file);
 
-        $this->assertTrue($pdfMerge->merge($outputFile));
+        $this->assertEquals('', $pdfMerge->merge($outputFile));
         $this->assertPDFEquals(__DIR__ . '/files/expected/output.pdf', $outputFile);
     }
 
