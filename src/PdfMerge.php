@@ -67,10 +67,11 @@ class PdfMerge
      *
      * @param string $outputFilename The file to write to
      * @param ?string $destination Destination where to send the document, see TCPDF docs for more info
+     * @param ?bool $autoOrient Set page orientation based on longest dimension, e.g. width > length => 'L'
      * @see \TCPDF::Output()
      * @throws NoFilesDefinedException
      */
-    public function merge(string $outputFilename, ?string $destination = 'F'): string
+    public function merge(string $outputFilename, ?string $destination = 'F', ?bool $autoOrient = false): string
     {
         if (count($this->files) === 0) {
             throw new NoFilesDefinedException();
@@ -83,7 +84,14 @@ class PdfMerge
                 $pageId = $this->pdf->ImportPage($i);
                 $size = $this->pdf->getTemplateSize($pageId);
 
-                $this->pdf->AddPage('P', $size);
+                if ($autoOrient) {
+                    $orientation = $size['w'] > $size['h'] ? 'L' : 'P';
+                } else {
+                    // Maintain legacy behavior
+                    $orientation = 'P';
+                }
+
+                $this->pdf->AddPage($orientation, $size);
                 $this->pdf->useTemplate($pageId);
             }
         }
