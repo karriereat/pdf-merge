@@ -908,10 +908,13 @@ class tcpdi_parser {
         do {
             // Get dict element.
             list($key, $eloffset) = $this->getRawObject($dictoffset, $dict);
-            if ($key[0] == '>>') {
+            if (isset($key[0]) && $key[0] == '>>') {
                 break;
             }
             list($element, $dictoffset) = $this->getRawObject($eloffset, $dict);
+            if(!isset($key[1])) {
+                break;
+            }
             $objval['/'.$key[1]] = $element;
             unset($key);
             unset($element);
