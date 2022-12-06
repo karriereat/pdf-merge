@@ -18,6 +18,8 @@ composer require karriere/pdf-merge
 ## Usage
 
 ```php
+use Karriere\PdfMerge\PdfMerge;
+
 $pdfMerge = new PdfMerge();
 
 $pdfMerge->add('/path/to/file1.pdf');
@@ -26,7 +28,7 @@ $pdfMerge->add('/path/to/file2.pdf');
 $pdfMerge->merge('/path/to/output.pdf');
 ```
 
-Please note, that the `merge` method will throw an `NoFilesDefinedException` if no files where added.
+Please note, that the `merge()`-method will throw a `NoFilesDefinedException` if no files where added.
 
 ### Check for file existence
 You can check if a file was already added for merging by calling:

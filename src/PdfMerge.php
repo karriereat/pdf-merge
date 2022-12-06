@@ -83,8 +83,8 @@ class PdfMerge
                 $pageId = $this->pdf->ImportPage($i);
                 $size = $this->pdf->getTemplateSize($pageId);
 
-                $this->pdf->AddPage('P', $size);
-                $this->pdf->useTemplate($pageId);
+                $this->pdf->AddPage('', $size);
+                $this->pdf->useTemplate($pageId, null, null, 0, 0, true);
             }
         }
 
@@ -101,12 +101,16 @@ class PdfMerge
             $tc = $headerConfig['tc'] ?? [0, 0, 0];
             $lc = $headerConfig['lc'] ?? [0, 0, 0];
             $this->pdf->setHeaderData($ln, $lw, $ht, $hs, $tc, $lc);
+        } else {
+            $this->pdf->setPrintHeader(false);
         }
 
         if (count($footerConfig)) {
             $tc = $footerConfig['tc'] ?? [0, 0, 0];
             $lc = $footerConfig['lc'] ?? [0, 0, 0];
             $this->pdf->setFooterData($tc, $lc);
+        } else {
+            $this->pdf->setPrintFooter(false);
         }
     }
 }
