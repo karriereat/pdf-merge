@@ -2,12 +2,17 @@
 
 namespace Karriere\PdfMerge;
 
+use Karriere\PdfMerge\Config\FooterConfig;
+use Karriere\PdfMerge\Config\HeaderConfig;
 use Karriere\PdfMerge\Exceptions\FileNotFoundException;
 use Karriere\PdfMerge\Exceptions\NoFilesDefinedException;
 use TCPDI;
 
 class PdfMerge
 {
+    /**
+     * @var array<int, string>
+     */
     private array $files = [];
     private TCPDI $pdf;
 
@@ -16,11 +21,8 @@ class PdfMerge
      * setHeaderData($ln='', $lw=0, $ht='', $hs='', $tc=array(0,0,0), $lc=array(0,0,0))
      * setFooterData($tc=array(0,0,0), $lc=array(0,0,0))
      * For more info about tcpdf, please read https://tcpdf.org/docs/
-     *
-     * @param array $headerConfig Only values for keys 'ln', 'lw', 'ht', 'hs', 'tc', 'lc' are taken into account
-     * @param array $footerConfig Only values for keys 'tc', 'lc' are taken into account
      */
-    public function __construct(array $headerConfig = [], array $footerConfig = [])
+    public function __construct(?HeaderConfig $headerConfig = null, ?FooterConfig $footerConfig = null)
     {
         $this->pdf = new TCPDI();
         $this->configureHeaderAndFooter($headerConfig, $footerConfig);
@@ -33,9 +35,6 @@ class PdfMerge
 
     /**
      * Adds a file to merge
-     *
-     * @param string $file The file to merge
-     * @throws FileNotFoundException when the given file does not exist
      */
     public function add(string $file): void
     {
@@ -64,13 +63,8 @@ class PdfMerge
 
     /**
      * Generates a merged PDF file from the already stored PDF files
-     *
-     * @param string $outputFilename The file to write to
-     * @param ?string $destination Destination where to send the document, see TCPDF docs for more info
-     * @see \TCPDF::Output()
-     * @throws NoFilesDefinedException
      */
-    public function merge(string $outputFilename, ?string $destination = 'F'): string
+    public function merge(string $outputFilename, string $destination = 'F'): string
     {
         if (count($this->files) === 0) {
             throw new NoFilesDefinedException();
@@ -91,24 +85,24 @@ class PdfMerge
         return $this->pdf->Output($outputFilename, $destination);
     }
 
-    private function configureHeaderAndFooter(array $headerConfig, array $footerConfig): void
+    private function configureHeaderAndFooter(?HeaderConfig $headerConfig, ?FooterConfig $footerConfig): void
     {
-        if (count($headerConfig)) {
-            $ln = $headerConfig['ln'] ?? '';
-            $lw = $headerConfig['lw'] ?? 0;
-            $ht = $headerConfig['ht'] ?? '';
-            $hs = $headerConfig['hs'] ?? '';
-            $tc = $headerConfig['tc'] ?? [0, 0, 0];
-            $lc = $headerConfig['lc'] ?? [0, 0, 0];
-            $this->pdf->setHeaderData($ln, $lw, $ht, $hs, $tc, $lc);
+        if ($headerConfig) {
+            $this->pdf->setHeaderData(
+                $headerConfig->imagePath(),
+                $headerConfig->logoWidthMM(),
+                $headerConfig->title(),
+                $headerConfig->text(),
+                $headerConfig->textColor()->toArray(),
+                $headerConfig->lineColor()->toArray(),
+            );
         } else {
             $this->pdf->setPrintHeader(false);
         }
 
-        if (count($footerConfig)) {
-            $tc = $footerConfig['tc'] ?? [0, 0, 0];
-            $lc = $footerConfig['lc'] ?? [0, 0, 0];
-            $this->pdf->setFooterData($tc, $lc);
+        if ($footerConfig) {
+            $this->pdf->setFooterData($footerConfig->textColor()->toArray(), $footerConfig->lineColor()->toArray());
+            $this->pdf->setFooterMargin($footerConfig->margin());
         } else {
             $this->pdf->setPrintFooter(false);
         }

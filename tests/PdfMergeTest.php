@@ -1,126 +1,93 @@
 <?php
 
-namespace Karriere\PdfMerge\Tests;
-
+use Karriere\PdfMerge\Config\FooterConfig;
+use Karriere\PdfMerge\Config\HeaderConfig;
+use Karriere\PdfMerge\Config\RGB;
 use Karriere\PdfMerge\Exceptions\FileNotFoundException;
 use Karriere\PdfMerge\Exceptions\NoFilesDefinedException;
 use Karriere\PdfMerge\PdfMerge;
-use PHPUnit\Framework\TestCase;
-use TCPDI;
 
-class PdfMergeTest extends TestCase
-{
-    /** @test */
-    public function it_returns_the_pdf_instance()
-    {
-        $pdfMerge = new PdfMerge();
-        $pdf = $pdfMerge->getPdf();
+beforeEach(function () {
+    $this->pdfMerge = new PdfMerge();
+    $this->dummyFile = __DIR__ . '/files/dummy.pdf';
+    $this->outputFile = __DIR__ . '/output.pdf';
+});
 
-        $this->assertInstanceOf(TCPDI::class, $pdf);
-    }
+it('returns PDF instance', function () {
+    expect($this->pdfMerge)->getPdf()->toBeInstanceOf(TCPDI::class);
+});
 
-    /** @test */
-    public function it_fails_on_adding_a_not_existing_file()
-    {
-        $this->expectException(FileNotFoundException::class);
-        $pdfMerge = new PdfMerge();
+it('throws exception when trying to add not existing page', function () {
+    ($this->pdfMerge)->add('/foo.pdf');
+})->throws(FileNotFoundException::class);
 
-        $pdfMerge->add('/foo.pdf');
-    }
+it('checks if file was already added', function () {
+    expect($this->pdfMerge)->contains($this->dummyFile)->toBeFalse();
+    $this->pdfMerge->add($this->dummyFile);
+    expect($this->pdfMerge)->contains($this->dummyFile)->toBeTrue();
+});
 
-    /** @test */
-    public function it_can_check_if_a_file_was_already_added()
-    {
-        $pdfMerge = new PdfMerge();
-        $file = __DIR__ . '/files/dummy.pdf';
+it('resets files to merge', function () {
+    $this->pdfMerge->add($this->dummyFile);
+    $this->pdfMerge->reset();
 
-        $this->assertFalse($pdfMerge->contains($file));
-        $pdfMerge->add($file);
-        $this->assertTrue($pdfMerge->contains($file));
-    }
+    expect($this->pdfMerge)->contains($this->dummyFile)->toBeFalse();
+});
 
-    /** @test */
-    public function it_can_reset_the_files_to_merge()
-    {
-        $pdfMerge = new PdfMerge();
-        $file = __DIR__ . '/files/dummy.pdf';
-        $pdfMerge->add($file);
-        $pdfMerge->reset();
+it('generates merged file', function () {
+    $this->pdfMerge->add($this->dummyFile);
+    $this->pdfMerge->add($this->dummyFile);
 
-        $this->assertFalse($pdfMerge->contains($file));
-    }
+    expect($this->pdfMerge)->merge($this->outputFile)->toBeEmptyString();
+    expect($this->outputFile)->toEqualPDF(__DIR__ . '/files/expected/output.pdf');
+});
 
-    /** @test */
-    public function it_can_generate_a_merged_file()
-    {
-        $pdfMerge = new PdfMerge();
-        $file = __DIR__ . '/files/dummy.pdf';
-        $outputFile = __DIR__ . '/output.pdf';
+it('merges portrait and landscape files', function () {
+    $this->pdfMerge->add($this->dummyFile);
+    $this->pdfMerge->add(__DIR__ . '/files/dummy_landscape.pdf');
 
-        $pdfMerge->add($file);
-        $pdfMerge->add($file);
+    expect($this->pdfMerge)->merge($this->outputFile)->toBeEmptyString();
+    expect($this->outputFile)->toEqualPDF(__DIR__ . '/files/expected/output_mixed_orientation.pdf');
+});
 
-        $this->assertEquals('', $pdfMerge->merge($outputFile));
-        $this->assertPDFEquals(__DIR__ . '/files/expected/output.pdf', $outputFile);
-    }
+it('adds header to merged PDF', function () {
+    copy(__DIR__ . '/files/header_logo.jpg', K_PATH_IMAGES . 'header_logo.png');
 
-    /** @test */
-    public function it_can_merge_portrait_and_landscape_files()
-    {
-        $pdfMerge = new PdfMerge();
-        $file = __DIR__ . '/files/dummy.pdf';
-        $fileHorizontal = __DIR__ . '/files/dummy_landscape.pdf';
-        $outputFile = __DIR__ . '/output.pdf';
+    $pdfMerge = new PdfMerge(new HeaderConfig(imagePath: 'header_logo.png', logoWidthMM: 20, title: 'Test'));
 
-        $pdfMerge->add($file);
-        $pdfMerge->add($fileHorizontal);
+    $pdfMerge->add($this->dummyFile);
+    $pdfMerge->add($this->dummyFile);
 
-        $this->assertEquals('', $pdfMerge->merge($outputFile));
-        $this->assertPDFEquals(__DIR__ . '/files/expected/output_mixed_orientation.pdf', $outputFile);
-    }
+    expect($pdfMerge)->merge($this->outputFile)->toBeEmptyString();
+    expect($this->outputFile)->toEqualPDF(__DIR__ . '/files/expected/output_with_header.pdf');
+});
 
-    /** @test */
-    public function it_adds_header_and_footer_to_the_merged_pdfs()
-    {
-        copy(__DIR__ . '/files/header_logo.jpg', K_PATH_IMAGES . 'header_logo.png');
+it('adds full header and full footer to merged PDF', function () {
+    copy(__DIR__ . '/files/header_logo.jpg', K_PATH_IMAGES . 'header_logo.png');
 
-        $pdfMerge = new PdfMerge(['ln' => 'header_logo.png', 'lw' => 20, 'ht' => 'Test']);
-        $file = __DIR__ . '/files/dummy.pdf';
-        $outputFile = __DIR__ . '/output.pdf';
+    $pdfMerge = new PdfMerge(
+        new HeaderConfig(
+            imagePath: 'header_logo.png',
+            logoWidthMM: 20,
+            title: 'Header',
+            text: 'This is a header text',
+            textColor: new RGB(200, 200, 200),
+            lineColor: new RGB(0, 0, 255),
+        ),
+        new FooterConfig(
+            textColor: new RGB(100, 100, 100),
+            lineColor: new RGB(255, 0, 0),
+            margin: 20,
+        ),
+    );
 
-        $pdfMerge->add($file);
-        $pdfMerge->add($file);
+    $pdfMerge->add($this->dummyFile);
+    $pdfMerge->add($this->dummyFile);
 
-        $this->assertEquals('', $pdfMerge->merge($outputFile));
-        $this->assertPDFEquals(__DIR__ . '/files/expected/output_with_header.pdf', $outputFile);
-    }
+    expect($pdfMerge)->merge($this->outputFile)->toBeEmptyString();
+    expect($this->outputFile)->toEqualPDF(__DIR__ . '/files/expected/output_with_header_and_footer.pdf');
+});
 
-    /** @test */
-    public function it_fails_on_generate_when_no_files_were_added()
-    {
-        $this->expectException(NoFilesDefinedException::class);
-
-        $pdfMerge = new PdfMerge();
-        $pdfMerge->merge('/foo.pdf');
-    }
-
-    private static function assertPDFEquals(string $expected, string $actual): void
-    {
-        self::assertEquals(
-            filesize($expected),
-            filesize($actual),
-            'The file size of the PDF does not equal the file size from the expected output.'
-        );
-
-        $pdf = new TCPDI();
-
-        $expectedPageCount = $pdf->setSourceFile($expected);
-        $actualPageCount = $pdf->setSourceFile($actual);
-
-        self::assertEquals(
-            $expectedPageCount,
-            $actualPageCount,
-            'The page count of the PDF does not equal the page count from the expected output.'
-        );
-    }
-}
+it('throws exception when no files were added', function () {
+    $this->pdfMerge->merge('/foo.pdf');
+})->throws(NoFilesDefinedException::class);
