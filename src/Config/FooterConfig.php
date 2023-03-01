@@ -12,7 +12,7 @@ class FooterConfig
     public function __construct(
         private ?RGB $textColor = null,
         private ?RGB $lineColor = null,
-        private int $margin = 10,
+        private int $margin = 0,
     ) {
     }
 
