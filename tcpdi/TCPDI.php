@@ -1,5 +1,7 @@
 <?php
 
+namespace Karriere\TCPDI;
+
 //
 //  TCPDI - Version 1.1
 //  Based on FPDI - Version 1.4.4
@@ -18,16 +20,6 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 //
-
-// Dummy shim to allow unmodified use of fpdf_tpl
-class FPDF extends TCPDF
-{
-}
-
-require_once('fpdf_tpl.php');
-
-require_once('tcpdi_parser.php');
-
 
 class TCPDI extends FPDF_TPL
 {
@@ -110,7 +102,7 @@ class TCPDI extends FPDF_TPL
         if (!isset($this->parsers[$filename])) {
             $this->parsers[$filename] = $this->_getPdfParser($filename);
         }
-        $this->current_parser =& $this->parsers[$filename];
+        $this->current_parser = & $this->parsers[$filename];
         $this->setPDFVersion(max($this->getPDFVersion(), $this->current_parser->getPDFVersion()));
 
         return $this->parsers[$filename]->getPageCount();
@@ -130,7 +122,7 @@ class TCPDI extends FPDF_TPL
         if (!isset($this->parsers[$filename])) {
             $this->parsers[$filename] = new tcpdi_parser($pdfdata, $filename);
         }
-        $this->current_parser =& $this->parsers[$filename];
+        $this->current_parser = & $this->parsers[$filename];
         $this->setPDFVersion(max($this->getPDFVersion(), $this->current_parser->getPDFVersion()));
 
         return $this->parsers[$filename]->getPageCount();
@@ -140,12 +132,12 @@ class TCPDI extends FPDF_TPL
      * Returns a PDF parser object
      *
      * @param string $filename
-     * @return fpdi_pdf_parser
+     * @return TCPDI_PARSER
      */
     public function _getPdfParser($filename)
     {
         $data = file_get_contents($filename);
-        return new tcpdi_parser($data, $filename);
+        return new TCPDI_PARSER($data, $filename);
     }
 
     /**
@@ -188,7 +180,7 @@ class TCPDI extends FPDF_TPL
             return $this->_importedPages[$pageKey];
         }
 
-        $parser =& $this->parsers[$fn];
+        $parser = & $this->parsers[$fn];
         $parser->setPageno($pageno);
 
         if (!in_array($boxName, $parser->availableBoxes)) {
@@ -221,8 +213,8 @@ class TCPDI extends FPDF_TPL
 
         $this->tpl++;
         $this->tpls[$this->tpl] = array();
-        $tpl =& $this->tpls[$this->tpl];
-        $tpl['parser'] =& $parser;
+        $tpl = & $this->tpls[$this->tpl];
+        $tpl['parser'] = & $parser;
         $tpl['resources'] = $parser->getPageResources();
         $tpl['buffer'] = $parser->getContent();
         $tpl['box'] = $box;
@@ -259,7 +251,7 @@ class TCPDI extends FPDF_TPL
     public function setPageFormatFromTemplatePage($pageno, $orientation)
     {
         $fn = $this->current_filename;
-        $parser =& $this->parsers[$fn];
+        $parser = & $this->parsers[$fn];
         $parser->setPageno($pageno);
         $boxes = $parser->getPageBoxes($pageno, $this->k);
         foreach ($boxes as $name => $box) {
@@ -272,7 +264,7 @@ class TCPDI extends FPDF_TPL
     }
 
     /* Wrapper for AddPage() which tracks TOC pages to offset annotations later */
-    public function AddPage($orientation='', $format='', $keepmargins=false, $tocpage=false)
+    public function AddPage($orientation = '', $format = '', $keepmargins = false, $tocpage = false)
     {
         if ($this->inxobj) {
             // we are inside an XObject template
@@ -285,7 +277,7 @@ class TCPDI extends FPDF_TPL
     }
 
     /* Wrapper for AddTOC() which tracks TOC position to offset annotations later */
-    public function AddTOC($page='', $numbersfont='', $filler='.', $toc_name='TOC', $style='', $color=array(0,0,0))
+    public function AddTOC($page = '', $numbersfont = '', $filler = '.', $toc_name = 'TOC', $style = '', $color = array(0,0,0))
     {
         if (!TCPDF_STATIC::empty_string($page)) {
             $this->_TOCpagenum = $page;
@@ -299,7 +291,7 @@ class TCPDI extends FPDF_TPL
     public function importAnnotations($pageno)
     {
         $fn = $this->current_filename;
-        $parser =& $this->parsers[$fn];
+        $parser = & $this->parsers[$fn];
         $parser->setPageno($pageno);
         $annots = $parser->getPageAnnotations();
 
@@ -423,7 +415,7 @@ class TCPDI extends FPDF_TPL
     {
         if (is_array($this->parsers) && count($this->parsers) > 0) {
             foreach ($this->parsers as $filename => $p) {
-                $this->current_parser =& $this->parsers[$filename];
+                $this->current_parser = & $this->parsers[$filename];
                 if (isset($this->_obj_stack[$filename]) && is_array($this->_obj_stack[$filename])) {
                     while (($n = key($this->_obj_stack[$filename])) !== null) {
                         $nObj = $this->current_parser->getObjectVal($this->_obj_stack[$filename][$n][1]);
@@ -456,10 +448,10 @@ class TCPDI extends FPDF_TPL
      */
     public function _putformxobjects()
     {
-        $filter=($this->compress) ? '/Filter /FlateDecode ' : '';
+        $filter = ($this->compress) ? '/Filter /FlateDecode ' : '';
         reset($this->tpls);
         foreach ($this->tpls as $tplidx => $tpl) {
-            $p=($this->compress) ? gzcompress($tpl['buffer']) : $tpl['buffer'];
+            $p = ($this->compress) ? gzcompress($tpl['buffer']) : $tpl['buffer'];
             $this->_newobj();
             $cN = $this->n; // TCPDF/Protection: rem current "n"
 
@@ -486,9 +478,9 @@ class TCPDI extends FPDF_TPL
                 $ty = -$tpl['box']['lly'];
 
                 if ($tpl['_rotationAngle'] <> 0) {
-                    $angle = $tpl['_rotationAngle'] * M_PI/180;
-                    $c=cos($angle);
-                    $s=sin($angle);
+                    $angle = $tpl['_rotationAngle'] * M_PI / 180;
+                    $c = cos($angle);
+                    $s = sin($angle);
 
                     switch($tpl['_rotationAngle']) {
                         case -90:
@@ -528,7 +520,7 @@ class TCPDI extends FPDF_TPL
             $this->_out('/Resources ');
 
             if (isset($tpl['resources'])) {
-                $this->current_parser =& $tpl['parser'];
+                $this->current_parser = & $tpl['parser'];
                 $this->pdf_write_value($tpl['resources']); // "n" will be changed
             } else {
                 $this->_out('<</ProcSet [/PDF /Text /ImageB /ImageC /ImageI]');
@@ -675,7 +667,7 @@ class TCPDI extends FPDF_TPL
 
                 // An indirect object reference
                 // Fill the object stack if needed
-                $cpfn =& $this->current_parser->uniqueid;
+                $cpfn = & $this->current_parser->uniqueid;
 
                 if (!isset($this->_don_obj_stack[$cpfn][$value[1]])) {
                     $this->_newobj(false, true);
@@ -783,7 +775,7 @@ class TCPDI extends FPDF_TPL
     }
 
     // Functions from here on are taken from FPDI's fpdi2tcpdf_bridge.php to remove dependence on it
-    public function _putstream($s, $n=0)
+    public function _putstream($s, $n = 0)
     {
         $this->_out($this->_getstream($s, $n));
     }
@@ -810,7 +802,7 @@ class TCPDI extends FPDF_TPL
     {
         $out = '';
         for ($count = 0, $n = strlen($s); $count < $n; $count++) {
-            if ($s[$count] != '\\' || $count == $n-1) {
+            if ($s[$count] != '\\' || $count == $n - 1) {
                 $out .= $s[$count];
             } else {
                 switch ($s[++$count]) {
@@ -835,7 +827,7 @@ class TCPDI extends FPDF_TPL
                         $out .= chr(0x0A);
                         break;
                     case "\r":
-                        if ($count != $n-1 && $s[$count+1] == "\n") {
+                        if ($count != $n - 1 && $s[$count + 1] == "\n") {
                             $count++;
                         }
                         break;
@@ -847,12 +839,12 @@ class TCPDI extends FPDF_TPL
                             ord($s[$count]) <= ord('9')) {
                             $oct = '' . $s[$count];
 
-                            if (ord($s[$count+1]) >= ord('0') &&
-                                ord($s[$count+1]) <= ord('9')) {
+                            if (ord($s[$count + 1]) >= ord('0') &&
+                                ord($s[$count + 1]) <= ord('9')) {
                                 $oct .= $s[++$count];
 
-                                if (ord($s[$count+1]) >= ord('0') &&
-                                    ord($s[$count+1]) <= ord('9')) {
+                                if (ord($s[$count + 1]) >= ord('0') &&
+                                    ord($s[$count + 1]) <= ord('9')) {
                                     $oct .= $s[++$count];
                                 }
                             }

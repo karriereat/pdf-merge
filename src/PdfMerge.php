@@ -6,7 +6,7 @@ use Karriere\PdfMerge\Config\FooterConfig;
 use Karriere\PdfMerge\Config\HeaderConfig;
 use Karriere\PdfMerge\Exceptions\FileNotFoundException;
 use Karriere\PdfMerge\Exceptions\NoFilesDefinedException;
-use TCPDI;
+use Karriere\TCPDI\TCPDI;
 
 class PdfMerge
 {

@@ -11,23 +11,19 @@
         }
     ],
     "require": {
-        "php": "8.0.* | 8.1.* | 8.2.*",
-        "tecnickcom/tcpdf": "^6.3"
+        "php": "8.2.*",
+        "tecnickcom/tcpdf": "^6.6"
     },
     "require-dev": {
-        "laravel/pint": "^1.5 | ^1.6",
-        "pestphp/pest": "^1.22",
+        "laravel/pint": "^1.13",
+        "pestphp/pest": "^2.23",
         "phpstan/phpstan": "^1.10"
     },
     "autoload": {
         "psr-4": {
-            "Karriere\\PdfMerge\\": "src/"
-        },
-        "classmap": [
-            "tcpi/fpdf_tpl.php",
-            "tcpi/tcpdi.php",
-            "tcpi/tcpdi_parser.php"
-		]
+            "Karriere\\PdfMerge\\": "src/",
+            "Karriere\\TCPDI\\": "tcpdi/"
+        }
     },
     "autoload-dev": {
         "psr-4": {

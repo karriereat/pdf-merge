@@ -6,11 +6,18 @@ use Karriere\PdfMerge\Config\RGB;
 use Karriere\PdfMerge\Exceptions\FileNotFoundException;
 use Karriere\PdfMerge\Exceptions\NoFilesDefinedException;
 use Karriere\PdfMerge\PdfMerge;
+use Karriere\TCPDI\TCPDI;
 
 beforeEach(function () {
     $this->pdfMerge = new PdfMerge();
     $this->dummyFile = __DIR__ . '/files/dummy.pdf';
     $this->outputFile = __DIR__ . '/output.pdf';
+});
+
+afterEach(function () {
+    if (file_exists($this->outputFile)) {
+        unlink($this->outputFile);
+    }
 });
 
 it('returns PDF instance', function () {
