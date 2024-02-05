@@ -101,7 +101,7 @@ class FPDF_TPL extends FPDF
 
         // Save settings
         $this->tpl++;
-        $tpl =& $this->tpls[$this->tpl];
+        $tpl = & $this->tpls[$this->tpl];
         $tpl = array(
             'o_x' => $this->x,
             'o_y' => $this->y,
@@ -135,7 +135,7 @@ class FPDF_TPL extends FPDF
 
         if ($this->CurrentFont) {
             $fontkey = $this->FontFamily . $this->FontStyle;
-            $this->_res['tpl'][$this->tpl]['fonts'][$fontkey] =& $this->fonts[$fontkey];
+            $this->_res['tpl'][$this->tpl]['fonts'][$fontkey] = & $this->fonts[$fontkey];
 
             $this->_out(sprintf('BT /F%d %.2f Tf ET', $this->CurrentFont['i'], $this->FontSizePt));
         }
@@ -159,7 +159,7 @@ class FPDF_TPL extends FPDF
 
         if ($this->_intpl) {
             $this->_intpl = false;
-            $tpl =& $this->tpls[$this->tpl];
+            $tpl = & $this->tpls[$this->tpl];
             $this->SetXY($tpl['o_x'], $tpl['o_y']);
             $this->tMargin = $tpl['o_tMargin'];
             $this->lMargin = $tpl['o_lMargin'];
@@ -175,7 +175,7 @@ class FPDF_TPL extends FPDF
 
             $fontkey = $this->FontFamily . $this->FontStyle;
             if ($fontkey) {
-                $this->CurrentFont =& $this->fonts[$fontkey];
+                $this->CurrentFont = & $this->fonts[$fontkey];
             }
 
             return $this->tpl;
@@ -212,10 +212,10 @@ class FPDF_TPL extends FPDF
         }
 
         if ($this->_intpl) {
-            $this->_res['tpl'][$this->tpl]['tpls'][$tplidx] =& $this->tpls[$tplidx];
+            $this->_res['tpl'][$this->tpl]['tpls'][$tplidx] = & $this->tpls[$tplidx];
         }
 
-        $tpl =& $this->tpls[$tplidx];
+        $tpl = & $this->tpls[$tplidx];
         $w = $tpl['w'];
         $h = $tpl['h'];
 
@@ -269,7 +269,7 @@ class FPDF_TPL extends FPDF
             return false;
         }
 
-        $tpl =& $this->tpls[$tplidx];
+        $tpl = & $this->tpls[$tplidx];
         $w = $tpl['w'];
         $h = $tpl['h'];
 
@@ -291,7 +291,7 @@ class FPDF_TPL extends FPDF
     /**
      * See FPDF/TCPDF-Documentation ;-)
      */
-    public function SetFont($family, $style = '', $size = 0, $fontfile='', $subset='default', $out=true)
+    public function SetFont($family, $style = '', $size = 0, $fontfile = '', $subset = 'default', $out = true)
     {
         if (is_subclass_of($this, 'TCPDF')) {
             $args = func_get_args();
@@ -303,9 +303,9 @@ class FPDF_TPL extends FPDF
         $fontkey = $this->FontFamily . $this->FontStyle;
 
         if ($this->_intpl) {
-            $this->_res['tpl'][$this->tpl]['fonts'][$fontkey] =& $this->fonts[$fontkey];
+            $this->_res['tpl'][$this->tpl]['fonts'][$fontkey] = & $this->fonts[$fontkey];
         } else {
-            $this->_res['page'][$this->page]['fonts'][$fontkey] =& $this->fonts[$fontkey];
+            $this->_res['page'][$this->page]['fonts'][$fontkey] = & $this->fonts[$fontkey];
         }
     }
 
@@ -340,9 +340,9 @@ class FPDF_TPL extends FPDF
 
         $ret = parent::Image($file, $x, $y, $w, $h, $type, $link);
         if ($this->_intpl) {
-            $this->_res['tpl'][$this->tpl]['images'][$file] =& $this->images[$file];
+            $this->_res['tpl'][$this->tpl]['images'][$file] = & $this->images[$file];
         } else {
-            $this->_res['page'][$this->page]['images'][$file] =& $this->images[$file];
+            $this->_res['page'][$this->page]['images'][$file] = & $this->images[$file];
         }
 
         return $ret;
@@ -415,10 +415,10 @@ class FPDF_TPL extends FPDF
      */
     public function _putformxobjects()
     {
-        $filter=($this->compress) ? '/Filter /FlateDecode ' : '';
+        $filter = ($this->compress) ? '/Filter /FlateDecode ' : '';
         reset($this->tpls);
         foreach ($this->tpls as $tplidx => $tpl) {
-            $p=($this->compress) ? gzcompress($tpl['buffer']) : $tpl['buffer'];
+            $p = ($this->compress) ? gzcompress($tpl['buffer']) : $tpl['buffer'];
             $this->_newobj();
             $this->tpls[$tplidx]['n'] = $this->n;
             $this->_out('<<' . $filter . '/Type /XObject');
