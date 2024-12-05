@@ -490,7 +490,7 @@ class TCPDI extends FPDF_TPL
                     $c = cos($angle);
                     $s = sin($angle);
 
-                    switch($tpl['_rotationAngle']) {
+                    switch ($tpl['_rotationAngle']) {
                         case -90:
                             $tx = -$tpl['box']['lly'];
                             $ty = $tpl['box']['urx'];
