@@ -530,7 +530,7 @@ class tcpdi_parser
                     }
                 }
             } elseif ($filltrailer) {
-                switch($key) {
+                switch ($key) {
                     case '/Size':
                     case '/Root':
                     case '/Info':
