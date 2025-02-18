@@ -107,4 +107,12 @@ class PdfMerge
             $this->pdf->setPrintFooter(false);
         }
     }
+
+    /**
+     * @return array<int, string>
+     */
+    public function getFiles(): array
+    {
+        return $this->files;
+    }
 }
