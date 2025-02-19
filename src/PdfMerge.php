@@ -35,6 +35,8 @@ class PdfMerge
 
     /**
      * Adds a file to merge
+     *
+     * @throws FileNotFoundException
      */
     public function add(string $file): void
     {
@@ -63,6 +65,8 @@ class PdfMerge
 
     /**
      * Generates a merged PDF file from the already stored PDF files
+     *
+     * @throws NoFilesDefinedException
      */
     public function merge(string $outputFilename, string $destination = 'F'): string
     {
