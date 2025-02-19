@@ -89,6 +89,14 @@ class PdfMerge
         return $this->pdf->Output($outputFilename, $destination);
     }
 
+    /**
+     * @return array<int, string>
+     */
+    public function getFiles(): array
+    {
+        return $this->files;
+    }
+
     private function configureHeaderAndFooter(?HeaderConfig $headerConfig, ?FooterConfig $footerConfig): void
     {
         if ($headerConfig) {
@@ -110,13 +118,5 @@ class PdfMerge
         } else {
             $this->pdf->setPrintFooter(false);
         }
-    }
-
-    /**
-     * @return array<int, string>
-     */
-    public function getFiles(): array
-    {
-        return $this->files;
     }
 }
