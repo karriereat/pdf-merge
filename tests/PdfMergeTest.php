@@ -50,6 +50,20 @@ it('merges portrait and landscape files', function () {
     expect($this->outputFile)->toEqualPDF(__DIR__ . '/files/expected/output_mixed_orientation.pdf');
 });
 
+it('merges PDFs containing comments after object headers', function () {
+    // Regression test: PDFs written by some generators contain comments right
+    // after the object header (e.g. "2 0 obj %PdfPages"). The parser used to
+    // lose the stream offset in that case and merge() failed with
+    // "TypeError: Cannot access offset of type array on string".
+    $this->pdfMerge->add($this->dummyFile);
+    $this->pdfMerge->add(__DIR__ . '/files/dummy_with_object_comments.pdf');
+
+    expect($this->pdfMerge)->merge($this->outputFile)->toBeEmptyString();
+
+    $reader = new TCPDI();
+    expect($reader->setSourceFile($this->outputFile))->toBe(2);
+});
+
 it('adds header to merged PDF', function () {
     copy(__DIR__ . '/files/header_logo.jpg', K_PATH_IMAGES . 'header_logo.png');
 
